@@ -1,0 +1,138 @@
+{
+    "Comment": "Monitoring cases",
+    "StartAt": "Monitor",
+    "States": {
+      "Monitor": {
+        "Type": "Parallel",
+        "Branches": [
+          {
+            "StartAt": "Run test 1NCE-Portal-Login",
+            "States": {
+              "Run test 1NCE-Portal-Login": {
+                "Type": "Task",
+                "InputPath": "$.1NCE-Portal-Login",
+                "Resource": "account_arn::function:prod-nce-web-probes-puppeteer_cases",
+                "TimeoutSeconds": 60,
+                "Catch": [
+                  {
+                    "ErrorEquals": [
+                      "States.ALL"
+                    ],
+                    "Next": "Fallback 1NCE-Portal-Login"
+                  }
+                ],
+                "End": true
+              },
+              "Fallback 1NCE-Portal-Login": {
+                "Type": "Task",
+                "InputPath": "$",
+                "Parameters": {
+                  "type": "1NCE-Portal-Login",
+                  "url": "https://portal.1nce.com/portal/customer/login"
+                },
+                "Resource": "account_arn::function:prod-nce-web-probes-publish_fallback_result",
+                "End": true
+              }
+            }
+          },
+          {
+            "StartAt": "Run test 1NCE-Portal-Content",
+            "States": {
+              "Run test 1NCE-Portal-Content": {
+                "Type": "Task",
+                "InputPath": "$.1NCE-Portal-Content",
+                "Resource": "account_arn::function:prod-nce-web-probes-puppeteer_cases",
+                "TimeoutSeconds": 60,
+                "Catch": [
+                  {
+                    "ErrorEquals": [
+                      "States.ALL"
+                    ],
+                    "Next": "Fallback 1NCE-Portal-Content"
+                  }
+                ],
+                "End": true
+              },
+              "Fallback 1NCE-Portal-Content": {
+                "Type": "Task",
+                "InputPath": "$",
+                "Parameters": {
+                  "type": "1NCE-Portal-Content",
+                  "url": "https://portal.1nce.com"
+                },
+                "Resource": "account_arn::function:prod-nce-web-probes-publish_fallback_result",
+                "End": true
+              }
+            }
+          },
+          {
+            "StartAt": "Run test 1NCE-API-Sims",
+            "States": {
+              "Run test 1NCE-API-Sims": {
+                "Type": "Task",
+                "InputPath": "$.1NCE-API-Sims",
+                "Resource": "account_arn::function:prod-nce-web-probes-api_cases",
+                "TimeoutSeconds": 30,
+                "Catch": [
+                  {
+                    "ErrorEquals": [
+                      "States.ALL"
+                    ],
+                    "Next": "Fallback 1NCE-API-Sims"
+                  }
+                ],
+                "End": true
+              },
+              "Fallback 1NCE-API-Sims": {
+                "Type": "Task",
+                "InputPath": "$",
+                "Parameters": {
+                  "type": "1NCE-API-Sims",
+                  "url": "https://api.1nce.com/management-api/v1/sims"
+                },
+                "Resource": "account_arn::function:prod-nce-web-probes-publish_fallback_result",
+                "End": true
+              }
+            }
+          },
+          {
+            "StartAt": "Run test 1NCE-API-Products",
+            "States": {
+              "Run test 1NCE-API-Products": {
+                "Type": "Task",
+                "InputPath": "$.1NCE-API-Products",
+                "Resource": "account_arn::function:prod-nce-web-probes-api_cases",
+                "TimeoutSeconds": 30,
+                "Catch": [
+                  {
+                    "ErrorEquals": [
+                      "States.ALL"
+                    ],
+                    "Next": "Fallback 1NCE-API-Products"
+                  }
+                ],
+                "End": true
+              },
+              "Fallback 1NCE-API-Products": {
+                "Type": "Task",
+                "InputPath": "$",
+                "Parameters": {
+                  "type": "1NCE-API-Products",
+                  "url": "https://api.1nce.com/management-api/v1/products"
+                },
+                "Resource": "account_arn::function:prod-nce-web-probes-publish_fallback_result",
+                "End": true
+              }
+            }
+          }
+        ],
+        "Next": "Publish results"
+      },
+      "Publish results": {
+        "Type": "Task",
+        "InputPath": "$",
+        "Resource": "account_arn::function:prod-nce-web-probes-publish_results",
+        "End": true
+      }
+    }
+  }
