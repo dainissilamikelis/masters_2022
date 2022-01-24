@@ -1,5 +1,5 @@
 # PLEASE READ THIS
-# I am still updating it, as it takes to test and esnure it all works flawlessly :) (22.01.2022 - last update, should be fully usable)
+# 22.01.2022 - last update, should be fully usable
 The provided application is very bare bones, as many of the used services are 1NCE specific, like
 <ol>
     <li> SSO login for company users</li>
